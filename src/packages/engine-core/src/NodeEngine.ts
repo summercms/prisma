@@ -360,20 +360,15 @@ You may have to run ${chalk.greenBright(
       path.dirname(this.datamodelPath), // Datamodel Dir
       this.cwd, //cwdPath
       '/tmp/prisma-engines',
+      path.join(
+        path.join(eval('__dirname'), '..'),
+        'src/node_modules/.prisma/client',
+      ),
     ]
 
     if (this.cwd.includes('.next/serverless')) {
       searchLocations.push(
         path.join(process.cwd(), 'node_modules/.prisma/client'),
-      )
-    }
-
-    if (process.env.NETLIFY) {
-      searchLocations.push(
-        path.join(
-          path.join(eval('__dirname'), '..'),
-          'src/node_modules/.prisma/client',
-        ),
       )
     }
 

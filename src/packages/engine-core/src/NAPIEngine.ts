@@ -580,20 +580,15 @@ You may have to run ${chalk.greenBright(
       path.dirname(this.config.datamodelPath), // Datamodel Dir
       this.config.cwd, //cwdPath
       '/tmp/prisma-engines',
+      path.join(
+        path.join(eval('__dirname'), '..'),
+        'src/node_modules/.prisma/client',
+      ),
     ]
 
     if (this.config.cwd?.includes('.next/serverless')) {
       searchLocations.push(
         path.join(process.cwd(), 'node_modules/.prisma/client'),
-      )
-    }
-
-    if (process.env.NETLIFY) {
-      searchLocations.push(
-        path.join(
-          path.join(eval('__dirname'), '..'),
-          'src/node_modules/.prisma/client',
-        ),
       )
     }
 
