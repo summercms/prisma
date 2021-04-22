@@ -251,6 +251,7 @@ export interface GetPrismaClientOptions {
   engineVersion?: string
   datasourceNames: string[]
   activeProvider: string
+  schemaDir?: string
 }
 
 export type Action =
@@ -390,7 +391,7 @@ export function getPrismaClient(config: GetPrismaClientOptions): any {
           dirname: config.dirname,
           enableDebugLogs: useDebug,
           enableEngineDebugMode: engineConfig.enableEngineDebugMode,
-          datamodelPath: path.join(config.dirname, 'schema.prisma'),
+          datamodelPath: path.join(config.schemaDir ?? config.dirname, 'schema.prisma'),
           prismaPath: engineConfig.binaryPath ?? undefined,
           engineEndpoint: engineConfig.endpoint,
           datasources,

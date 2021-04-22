@@ -334,14 +334,12 @@ You may have to run ${chalk.greenBright(
     }
   }
 
-  private async resolvePrismaPath(): Promise<{
-    prismaPath: string
-    searchedLocations: string[]
-  }> {
+  private async resolvePrismaPath() {
     const searchedLocations: string[] = []
-    let enginePath
+    let enginePath: string
+
     if (this.prismaPath) {
-      return { prismaPath: this.prismaPath, searchedLocations }
+      return { enginePath: this.prismaPath, searchedLocations }
     }
 
     const platform = await this.getPlatform()
@@ -353,7 +351,7 @@ You may have to run ${chalk.greenBright(
 
     if (__filename.includes('NodeEngine')) {
       enginePath = this.getQueryEnginePath(this.platform, getEnginesPath())
-      return { prismaPath: enginePath, searchedLocations }
+      return { enginePath, searchedLocations }
     }
     const searchLocations: string[] = [
       eval(`require('path').join(__dirname, '../../../.prisma/client')`), // Dot Prisma Path
@@ -361,6 +359,10 @@ You may have to run ${chalk.greenBright(
       path.join(eval('__dirname'), '..'), // parentDirName
       path.dirname(this.datamodelPath), // Datamodel Dir
       this.cwd, //cwdPath
+      path.join(
+        /(.*)\/.next\/serverless/.exec(eval('__dirname'))?.[1] ?? '',
+        'node_modules/.prisma/client',
+      ),
       '/tmp/prisma-engines',
     ]
 
@@ -369,24 +371,26 @@ You may have to run ${chalk.greenBright(
     }
 
     for (const location of searchLocations) {
-      searchedLocations.push(location)
+      if (location) searchedLocations.push(location)
+
       debug(`Search for Query Engine in ${location}`)
       enginePath = this.getQueryEnginePath(this.platform, location)
       if (fs.existsSync(enginePath)) {
-        return { prismaPath: enginePath, searchedLocations }
+        return { enginePath, searchedLocations }
       }
     }
+
     enginePath = this.getQueryEnginePath(this.platform)
 
-    return { prismaPath: enginePath ?? '', searchedLocations }
+    return { enginePath, searchedLocations }
   }
 
   // get prisma path
   private async getPrismaPath(): Promise<string> {
-    const { prismaPath, searchedLocations } = await this.resolvePrismaPath()
+    const { enginePath, searchedLocations } = await this.resolvePrismaPath()
     const platform = await this.getPlatform()
     // If path to query engine doesn't exist, throw
-    if (!(await exists(prismaPath))) {
+    if (!(await exists(enginePath))) {
       const pinnedStr = this.incorrectlyPinnedBinaryTarget
         ? `\nYou incorrectly pinned it to ${chalk.redBright.bold(
             `${this.incorrectlyPinnedBinaryTarget}`,
@@ -397,9 +401,10 @@ You may have to run ${chalk.greenBright(
         platform,
       )}" could not be found.${pinnedStr}
 This probably happens, because you built Prisma Client on a different platform.
-(Prisma Client looked in "${chalk.underline(prismaPath)}")
+(Prisma Client looked in "${chalk.underline(enginePath)}")
 
 Searched Locations:
+
 
 ${searchedLocations
   .map((f) => {
@@ -472,10 +477,10 @@ ${chalk.dim("In case we're mistaken, please report this to us 🙏.")}`)
     }
 
     if (process.platform !== 'win32') {
-      plusX(prismaPath)
+      plusX(enginePath)
     }
 
-    return prismaPath
+    return enginePath
   }
 
   private getFixedGenerator(): string {

@@ -579,6 +579,10 @@ You may have to run ${chalk.greenBright(
       path.join(eval('__dirname'), '..'), // parentDirName
       path.dirname(this.config.datamodelPath), // Datamodel Dir
       this.config.cwd, //cwdPath
+      path.join(
+        /(.*)\/.next\/serverless/.exec(eval('__dirname'))?.[1] ?? '',
+        'node_modules/.prisma/client',
+      ),
       '/tmp/prisma-engines',
     ]
 

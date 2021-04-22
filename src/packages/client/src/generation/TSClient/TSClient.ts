@@ -68,6 +68,7 @@ export class TSClient implements Generatable {
       engineVersion: this.options.engineVersion,
       datasourceNames: this.options.datasources.map((d) => d.name),
       activeProvider: this.options.activeProvider,
+      schemaDir: schemaDir,
     }
     if (
       process.env.PRISMA_FORCE_NAPI &&
