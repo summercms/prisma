@@ -582,7 +582,7 @@ You may have to run ${chalk.greenBright(
       '/tmp/prisma-engines',
       path.join(
         path.join(eval('__dirname'), '..'),
-        'src/node_modules/.prisma/client',
+        'node_modules/.prisma/client',
       ),
     ]
 
