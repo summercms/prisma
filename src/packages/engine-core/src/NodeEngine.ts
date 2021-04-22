@@ -359,19 +359,21 @@ You may have to run ${chalk.greenBright(
       path.join(eval('__dirname'), '..'), // parentDirName
       path.dirname(this.datamodelPath), // Datamodel Dir
       this.cwd, //cwdPath
-      path.join(
-        /(.*)\/.next\/serverless/.exec(eval('__dirname'))?.[1] ?? '',
-        'node_modules/.prisma/client',
-      ),
       '/tmp/prisma-engines',
     ]
+
+    if (this.cwd.includes('.next/serverless')) {
+      searchLocations.push(
+        path.join(process.cwd(), 'node_modules/.prisma/client'),
+      )
+    }
 
     if (this.dirname) {
       searchLocations.push(this.dirname)
     }
 
     for (const location of searchLocations) {
-      if (location) searchedLocations.push(location)
+      searchedLocations.push(location)
 
       debug(`Search for Query Engine in ${location}`)
       enginePath = this.getQueryEnginePath(this.platform, location)
