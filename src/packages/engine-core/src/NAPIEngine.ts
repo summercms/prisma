@@ -588,6 +588,15 @@ You may have to run ${chalk.greenBright(
       )
     }
 
+    if (process.env.NETLIFY) {
+      searchLocations.push(
+        path.join(
+          path.join(eval('__dirname'), '..'),
+          'src/node_modules/.prisma/client',
+        ),
+      )
+    }
+
     if (this.config.dirname) {
       searchLocations.push(this.config.dirname)
     }
